@@ -17,6 +17,22 @@ on:
         required: false
         default: "setupCIWorkspace"
         type: string
+  workflow_dispatch:
+      secrets:
+      MAVEN_USER:
+        required: false
+      MAVEN_PASSWORD:
+        required: false
+      CURSEFORGE_TOKEN:
+        required: false
+      MODRINTH_TOKEN:
+        required: false
+    inputs:
+      workspace:
+        description: 'setupCIWorkspace/setupDecompWorkspace'
+        required: false
+        default: "setupCIWorkspace"
+        type: string
 
 jobs:
   build:
