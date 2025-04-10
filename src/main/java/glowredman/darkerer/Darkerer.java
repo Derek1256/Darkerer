@@ -4,7 +4,7 @@ import cpw.mods.fml.common.Mod;
 
 @Mod(
     acceptedMinecraftVersions = "[1.7.10]",
-    acceptableRemoteVersions = "*",
+    acceptableRemoteVersions = Tags.VERSION,
     dependencies = "required-after:gtnhlib@[0.6.3,);required-after:unimixins",
     modid = Darkerer.MODID,
     name = "Darkerer",
