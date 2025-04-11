@@ -1,13 +1,49 @@
+name: Compile&Test
 
-name: Build and test
-
-on:
-  pull_request:
-    branches: [ master, main ]
-  push:
-    branches: [ master, main ]
-
+on: [push]
 jobs:
-  build-and-test:
-    uses: GTNewHorizons/GTNH-Actions-Workflows/.github/workflows/build-and-test.yml@master
-    secrets: inherit
+  build:
+    runs-on: ubuntu-24.04
+    env:
+      VERSION: ${{ github.ref_name }}
+      RELEASE_VERSION: ${{ github.ref_name }}
+      SNAPSHOT: ${{ endsWith(github.ref_name, '-snapshot') || contains(github.event.head_commit.message, '[snapshot]') }}
+      MAVEN_PUBLISHING_URL: ${{ vars.MAVEN_PUBLISHING_URL || 'https://nexus.gtnewhorizons.com/repository/releases/' }}
+    steps:
+      - name: Checkout mod repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 32
+          
+      - name: Set up JDK versions
+        uses: https://github.com/actions/setup-java@v4
+        with:
+          java-version: |
+            8
+            17
+            21
+          distribution: 'zulu'
+
+      - name: Setup Gradle
+        uses: https://github.com/gradle/gradle-build-action@v2
+        with:
+          build-scan-publish: true
+          build-scan-terms-of-use-url: "https://gradle.com/terms-of-service"
+          build-scan-terms-of-use-agree: "yes"
+          validate-wrappers: true
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Setup the workspace
+        run: ./gradlew --build-cache --info --stacktrace ${{ inputs.workspace }}
+
+      - name: Compile the mod
+        run: ./gradlew --build-cache --info --stacktrace assemble
+
+      - name: Attach .jar artifacts
+        uses: https://github.com/actions/upload-artifact@v3
+        with:
+          name: FadeSMP-Darkness.jar
+          path: build/libs/FadeSMP-Darkness-main.jar
+          retention-days: 90
