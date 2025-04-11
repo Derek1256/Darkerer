@@ -42,7 +42,7 @@ jobs:
         run: ./gradlew --build-cache --info --stacktrace assemble
 
       - name: Attach .jar artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: FadeSMP-Darkness.jar
           path: build/libs/FadeSMP-Darkness-main.jar
